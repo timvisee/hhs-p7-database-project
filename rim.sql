@@ -99,7 +99,6 @@ CREATE TABLE Aankoop(
     FOREIGN KEY(prod_nr) REFERENCES Evenementen(prod_nr)
 );
 
-
 CREATE TABLE Abon(
     abmnt INT NOT NULL,
     titel_cd VARCHAR(4) NOT NULL,
@@ -128,6 +127,7 @@ CREATE TABLE Premielevering(
     FOREIGN KEY(ontvanger) REFERENCES Klant(klant_id),
     FOREIGN KEY(prod_nr) REFERENCES Product(prod_nr)
 );
+
 CREATE TABLE Webhistorie(
     titel_cd VARCHAR(4) NOT NULL,
     klant_id INT NOT NULL,
@@ -143,6 +143,7 @@ CREATE TABLE Webhistorie(
     FOREIGN KEY(titel_cd) REFERENCES Titel(titel_cd),
     FOREIGN KEY(klant_id) REFERENCES Klant(klant_id)
 );
+
 CREATE TABLE Event_Medewerker(
     prod_nr INT NOT NULL,
     medw_nr INT NOT NULL,
@@ -159,7 +160,7 @@ CREATE TABLE functies(
     PRIMARY KEY(functie_nr),
     FOREIGN KEY(cursus) REFERENCES Activiteit(Activ_id )
 );
-
+
 CREATE TABLE gesprek(
     manager INT NOT NULL,
     medewerker INT NOT NULL,
@@ -178,10 +179,9 @@ CREATE TABLE Klant_Event(
     FOREIGN KEY(klant_id) REFERENCES Klant(klant_id)
 );
 
-
-
-
+--
 -- TRIGGERT 1
+--
 CREATE TRIGGER dbo.before_locCheck_insert
 ON dbo.Evenementen
 FOR INSERT
@@ -203,9 +203,9 @@ ROLLBACK TRANSACTION;
 RETURN 
 END;
 
-
+--
 --TRIGGERT 2 + procedure
-
+--
 CREATE TRIGGER before_klantEvent_insert
 ON dbo.Klant_Event 
 FOR INSERT
@@ -221,13 +221,12 @@ BEGIN
     Execute check_matching_dates @customer, @product
 END;
 
-
 CREATE PROCEDURE check_matching_dates @klant_id INT = NULL, @prod_nr INT = NULL
 AS
 BEGIN
     DECLARE @existingDate DATE;
     DECLARE @newDate DATE;
-    
+
 SELECT @existingDate = E.begin_dt
 FROM Klant_Event KE
 INNER JOIN Event E
@@ -255,9 +254,9 @@ BEGIN
 END;
 END;
 
-
+--
 -- TRIGGERT 3
-
+--
 CREATE TRIGGER before_event_insert
 ON Evenementen
 FOR INSERT
@@ -275,7 +274,7 @@ BEGIN
     FROM Evenementen E
     INNER JOIN Activiteit A
     ON E.activ_id = A.activ_id;
-    
+
     IF @begin_dt <> @end_dt AND @eventType = 'WORKSHOP'
     BEGIN
         RAISERROR ('Workshop mag niet langer dan 1 dag duren!', 16, 1);
@@ -284,7 +283,9 @@ BEGIN
     END;
 END;
 
+--
 -- TRIGGERT 4
+--
 CREATE TRIGGER before_email_insert ON Medewerker
 FOR INSERT
 AS
@@ -298,17 +299,22 @@ BEGIN
     INSERT INTO Medewerker(email) VALUES ( CONCAT(SUBSTRING(@surname, 0, 1) ,@lastname, '@ntu.nl'))
 END;
 
+--
 -- CONSTRAINT 5
-
+--
 ALTER TABLE Orders
 ADD UNIQUE (leveringsorder);
 
+--
 -- CONSTRAINT 6
+--
 ALTER TABLE Orders
 ADD CONSTRAINT retourorder_check CHECK ((betaalwijze IS NULL AND leveringsorder IS NOT NULL AND kanaal = 'R') OR (betaalwijze IS NOT NULL AND kanaal <> 'R' AND leveringsorder IS NOT NULL));
 
 
+--
 -- CONSTRAINT 7
+--
 CREATE TRIGGER check_retour_date_order
 ON Orders
 FOR INSERT
@@ -336,13 +342,15 @@ IF DATEDIFF(day, @orddate, @newDate) > 21
 
 END;
 
-
+--
 -- CONSTRAINT 8
+--
 ALTER TABLE Orders
 ADD CONSTRAINT order_betaalwijze_notnull CHECK ((betaalwijze IS NULL AND kanaal = 'R') OR kanaal <> 'R');
 
-
+--
 -- CONSTRAINT 9
+--
 CREATE TRIGGER Check_purchase_retourorder
 ON  Orders
 FOR INSERT
@@ -361,9 +369,9 @@ BEGIN
 END;
 END;
 
-
-
+--
 -- CONSTRAINT 10
+--
 CREATE TRIGGER before_checkProductExists_insert
 ON Orders
 FOR INSERT
@@ -404,8 +412,10 @@ BEGIN
     RETURN
 END;
 END;
--- CONSTRAINT 11
 
+--
+-- CONSTRAINT 11
+--
 CREATE TRIGGER before_checkproduct_insert
 ON Orders
 FOR INSERT
@@ -415,12 +425,12 @@ DECLARE @newLevOrd INT;
 
 SELECT @newLevOrd = i.leveringsorder FROM inserted i;
 
-BEGIN   
+BEGIN
     IF @newLevOrd <> NULL
     BEGIN
         EXECUTE check_if_event @newLevOrd;
     END;
-    
+
 END;
 
 CREATE PROCEDURE check_if_event @leveringsorder INT = NULL
@@ -441,9 +451,9 @@ IF @product IN (SELECT prod_nr FROM Event)
     END;
 END;
 
-
+--
 -- CONSTRAINT 12
-
+--
 ALTER TABLE Aankoop
 ADD UNIQUE (prod_nr, order_nr);
 
@@ -460,12 +470,12 @@ SELECT @newOrd = i.order_nr, @newPrice = i.bedrag, @newAmount = i.aantal FROM in
 
 BEGIN
     DECLARE @kanaal CHAR(1);
-    
+
     SELECT @kanaal =O.kanaal FROM Aankoop A
     INNER JOIN Orders O
     ON A.order_nr = O.order_nr
     WHERE O.order_nr = @newOrd
-    
+
     IF @newPrice > 0 OR @newAmount > 0 AND @kanaal = 'R'
     BEGIN
         RAISERROR ('Bedrag of aantal mag niet boven nul zijn bij een router order!', 16, 1);
@@ -474,9 +484,9 @@ BEGIN
     END;
 END;
 
-
+--
 -- CONSTRAINT 13
-
+--
 CREATE TRIGGER before_insupdel_aankoop
 ON Aankoop
 FOR INSERT,UPDATE,DELETE
@@ -510,8 +520,9 @@ IF @aantRetour < 0 OR @aantRetour > @aantVerkocht
     END;
 END;
 
-
+--
 -- CONSTRAINT 14
+--
 CREATE TRIGGER before_instert_aankoop_retour_prijs
 ON Aankoop
 FOR INSERT
@@ -528,16 +539,16 @@ BEGIN
     FROM Aankoop A
     INNER JOIN Orders O
     ON A.order_nr = O.order_nr
-    WHERE A.order_nr = @newOrd;    
+    WHERE A.order_nr = @newOrd;
     IF @checkRetour = 'R'
     BEGIN
         DECLARE @amountRetour INT;
         DECLARE @priceRetour DECIMAL(5,2);
-        
+
         SELECT @amountRetour = aantal, @priceRetour = bedrag
         FROM Aankoop
-        WHERE aankoop_nr = @newAankoop;    
-    
+        WHERE aankoop_nr = @newAankoop;
+
         DECLARE @amountOriginal INT;
         DECLARE @priceOriginal DECIMAL(5,2);
 
@@ -545,7 +556,7 @@ BEGIN
         FROM Aankoop A
         INNER JOIN Orders O
         ON A.order_nr = O.order_nr
-        WHERE A.order_nr = O.leveringsorder;        
+        WHERE A.order_nr = O.leveringsorder;
         IF (@priceOriginal * (@amountRetour / @amountOriginal) * -1 <> @priceRetour)
         BEGIN
             RAISERROR ('Het bedrag van de retour order klopt niet!', 16, 1);
@@ -554,7 +565,10 @@ BEGIN
         END;
     END;
 END;
+
+--
 -- CONSTRAIN 15
+--
 CREATE TRIGGER before_insert_aankoop_aantal_retour
 ON Aankoop
 FOR INSERT
@@ -576,15 +590,12 @@ BEGIN
     SELECT @customer = klant_id, @month = DATEPART(yyyy,datum), @year = DATEPART(mm,datum)
     FROM Orders
     WHERE kanaal = 'R' AND leveringsorder = @newOrd;
-    
+
     SELECT @oldNRetour = n_retour, @oldBRetour = b_retour
     FROM Webhistorie
     WHERE klant_id = @customer AND maand = @month AND jaar = @year;
-    
+
     UPDATE Webhistorie
     SET n_retour = (@oldNRetour + @newAmount), b_retour = (@oldBRetour + @newPrice)
     WHERE klant_id = @customer AND maand = @month AND jaar = @year;
 END;
-
-
-
