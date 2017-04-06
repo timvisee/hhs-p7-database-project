@@ -206,6 +206,7 @@ AS
     ROLLBACK TRANSACTION;
     RETURN
   END;
+
 GO
 
 --
@@ -225,6 +226,7 @@ AS
   BEGIN
     EXECUTE check_matching_dates @customer, @product
   END;
+
 GO
 
 CREATE PROCEDURE check_matching_dates @klant_id INT = NULL, @prod_nr INT = NULL
@@ -260,6 +262,8 @@ AS
       END;
   END;
 
+GO
+
 --
 -- TRIGGERT 3
 --
@@ -290,6 +294,7 @@ AS
         RETURN
       END;
   END;
+
 GO
 
 --
@@ -309,6 +314,7 @@ AS
   BEGIN
     INSERT INTO Medewerker (email) VALUES (CONCAT(SUBSTRING(@surname, 0, 1), @lastname, '@ntu.nl'))
   END;
+
 GO
 
 --
@@ -317,6 +323,8 @@ GO
 ALTER TABLE Orders
   ADD UNIQUE (leveringsorder);
 
+GO
+
 --
 -- CONSTRAINT 6
 --
@@ -324,6 +332,7 @@ ALTER TABLE Orders
   ADD CONSTRAINT retourorder_check CHECK ((betaalwijze IS NULL AND leveringsorder IS NOT NULL AND kanaal = 'R') OR
                                           (betaalwijze IS NOT NULL AND kanaal <> 'R' AND leveringsorder IS NOT NULL));
 
+GO
 
 --
 -- CONSTRAINT 7
@@ -353,6 +362,7 @@ AS
         RETURN
       END;
   END;
+
 GO
 
 --
@@ -360,6 +370,8 @@ GO
 --
 ALTER TABLE Orders
   ADD CONSTRAINT order_betaalwijze_notnull CHECK ((betaalwijze IS NULL AND kanaal = 'R') OR kanaal <> 'R');
+
+GO
 
 --
 -- CONSTRAINT 9
@@ -383,6 +395,7 @@ AS
         RETURN
       END;
   END;
+
 GO
 
 --
@@ -405,6 +418,7 @@ AS
         EXECUTE check_product_retour @newOrder, @newLevOrd;
       END;
   END;
+
 GO
 
 CREATE PROCEDURE check_product_retour @newOrder INT = NULL, @newLevOrd INT = NULL
@@ -433,6 +447,8 @@ AS
       END;
   END;
 
+GO
+
 --
 -- CONSTRAINT 11
 --
@@ -451,6 +467,7 @@ AS
         EXECUTE check_if_event @newLevOrd;
       END;
   END;
+
 GO
 
 CREATE PROCEDURE check_if_event @leveringsorder INT = NULL
@@ -473,11 +490,15 @@ AS
       END;
   END;
 
+GO
+
 --
 -- CONSTRAINT 12
 --
 ALTER TABLE Aankoop
   ADD UNIQUE (prod_nr, order_nr);
+
+GO
 
 CREATE TRIGGER bedrag_aantal_negatief
   ON Aankoop
@@ -507,6 +528,7 @@ AS
         RETURN
       END;
   END;
+
 GO
 
 --
@@ -544,6 +566,7 @@ AS
         RETURN
       END;
   END;
+
 GO
 
 --
@@ -596,6 +619,7 @@ AS
           END;
       END;
   END;
+
 GO
 
 --
@@ -634,4 +658,5 @@ AS
     SET n_retour = (@oldNRetour + @newAmount), b_retour = (@oldBRetour + @newPrice)
     WHERE klant_id = @customer AND maand = @month AND jaar = @year;
   END;
+
 GO
