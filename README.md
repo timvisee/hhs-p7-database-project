@@ -6,7 +6,7 @@ A respository for source code files, such as SQL query's.
   ticket bij een event.
 * Op welke postcode (van klanten) zijn er het meeste orders gedaan in de
   laatste 2 jaar. Top 10.
-* Wat zijn de titels van de 10 langst lopende abonnementen, en wat is de begin
-  datum van het abonnement;
+* Wat zijn de titels van de 10 langst lopende abonnementen, wat is de begin
+  datum van het abonnement, en hoeveel opzegredenen heeft elke titel;
     * Van elke klant mag er maar 1 abonnement in het resultaat meegenomen worden.
     * De titels in het eindresultaat moeten uniek zijn.
