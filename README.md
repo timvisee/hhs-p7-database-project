@@ -37,6 +37,10 @@ ON Aankoop.order_nr = Orders.order_nr;
 #### Performance:
 ![Query 1 performance and execution plan](query1_perf.png)
 
+#### Evaluatie
+In het executieoverzicht van deze query wordt er gebruik gemaakt van indexes.
+Dit maakt het uitvoeren van de query een stuk sneller.
+Omdat er al indexes gebruikt worden, hoeven er geen extra indices toegevoegd te worden.
 
 ## Query 2 - Meeste orders per postcode
 Requirement:
@@ -74,8 +78,12 @@ ORDER BY
 #### Performance:
 ![query 2 performance and execution plan](query2_perf.png)
 
+#### Evaluatie
+Ook in deze query wordt er geselecteerd op de indices die we aangemaakt hebben.
+Het toevoegen van een extra index zou de performance niet verbeteren.
+
 ## Query 3 - Titels langst lopende abonnementen
-Requirement:
+#### Requirement:
 * Wat zijn de titels van de 3 langst lopende abonnementen, en hoeveel
   opzegredenen heeft elke titel;
     * Van elke klant mag er maar 1 abonnement in het resultaat meegenomen worden.
@@ -116,8 +124,10 @@ JOIN Titel
   ON a.titel_cd = Titel.titel_cd
 LEFT JOIN Opzegreden
   ON a.opzegreden = Opzegreden.opzegreden
-GROUP BY titel
-WHERE row_number = 1;
+WHERE
+  row_number = 1
+GROUP BY
+  titel;
 ```
 
 #### Data:
@@ -129,3 +139,7 @@ WHERE row_number = 1;
 
 #### Performance:
 ![Query 3 performance and execution plan](query3_perf.png)
+
+#### Evaluatie
+Ok deze query maakt gebruik van selects op een index om de query een stuk te versnellen.
+Het toevoegen van extra indices is natuurlijk mogelijk, maar dit zou de query niet versnellen.
