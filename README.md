@@ -12,11 +12,11 @@ A respository for source code files, such as SQL query's.
     * De titels in het eindresultaat moeten uniek zijn.
 
 ## Query 1 - Event tickets
-Requirement:
+#### Requirement:
 * Hoeveel dagen van te voren (gemiddeld) wordt een order gedaan voor een
   ticket bij een event.
 
-Query:
+#### Query:
 ```
 SELECT
   AVG(DATEDIFF(DD, Evenementen.begin_dt, Orders.datum)) AS avg_dagen
@@ -29,13 +29,12 @@ JOIN Orders
 ON Aankoop.order_nr = Orders.order_nr;
 ```
 
-Data:
-
+#### Data:
 |avg_dagen|
 |:---|
 |382|
 
-Performance:
+#### Performance:
 ![Query 1 performance and execution plan](query1_perf.png)
 
 
@@ -44,7 +43,7 @@ Requirement:
 * Op welke postcode (van klanten) zijn er het meeste orders gedaan in de
   laatste 5 jaar. Top 10.
 
-Query:
+#### Query:
 ```
 SELECT
   TOP(10) pc AS postcode,
@@ -58,8 +57,7 @@ ORDER BY
   aantal DESC
 ```
 
-Data:
-
+#### Data:
 |postcode|aantal|
 |:---|:---|
 |7811CL|37|
@@ -73,7 +71,7 @@ Data:
 |6562EM|23|
 |2715GL|22|
 
-performance:
+#### Performance:
 ![query 2 performance and execution plan](query2_perf.png)
 
 ## Query 3 - Titels langst lopende abonnementen
@@ -83,7 +81,7 @@ Requirement:
     * Van elke klant mag er maar 1 abonnement in het resultaat meegenomen worden.
     * De titels in het eindresultaat moeten uniek zijn.
 
-Query:
+#### Query:
 ```
 SELECT
   TOP(3)
@@ -122,13 +120,12 @@ GROUP BY titel
 WHERE row_number = 1;
 ```
 
-Data:
-
+#### Data:
 |titel|opzeg_aantal|
 |:---|:---|
 |Auto van Nu|7462|
 |Eten van Nu|15056|
 |Kinderen van Nu|22120|
 
-Performance:
+#### Performance:
 ![Query 3 performance and execution plan](query3_perf.png)
