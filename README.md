@@ -38,14 +38,15 @@ ON Aankoop.order_nr = Orders.order_nr;
 ![Query 1 performance and execution plan](query1_perf.png)
 
 #### Evaluatie
-In het executieoverzicht van deze query wordt er gebruik gemaakt van indexes.
-Dit maakt het uitvoeren van de query een stuk sneller.
+In het executieoverzicht van deze query wordt er gebruik gemaakt van indexes.  
+Dit maakt het uitvoeren van de query een stuk sneller.  
 Omdat er al indexes gebruikt worden, hoeven er geen extra indices toegevoegd te worden.
 
 ## Query 2 - Meeste orders per postcode
 Requirement:
 * Op welke postcode (van klanten) zijn er het meeste orders gedaan in de
-  laatste 5 jaar. Top 10.
+  laatste 5 jaar.
+* Laat de top 10 zien.
 
 #### Query:
 ```
@@ -141,5 +142,5 @@ GROUP BY
 ![Query 3 performance and execution plan](query3_perf.png)
 
 #### Evaluatie
-Ok deze query maakt gebruik van selects op een index om de query een stuk te versnellen.
+Ok deze query maakt gebruik van selects op een index om de query een stuk te versnellen.  
 Het toevoegen van extra indices is natuurlijk mogelijk, maar dit zou de query niet versnellen.
