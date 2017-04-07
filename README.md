@@ -35,6 +35,9 @@ Data:
 |:---|
 |382|
 
+Performance:
+![Query 1 performance and execution plan](query1_perf.png)
+
 
 ## Query 2 - Meeste orders per postcode
 Requirement:
@@ -69,6 +72,9 @@ Data:
 |6043WP|23|
 |6562EM|23|
 |2715GL|22|
+
+performance:
+![query 2 performance and execution plan](query2_perf.png)
 
 ## Query 3 - Titels langst lopende abonnementen
 Requirement:
@@ -124,3 +130,5 @@ Data:
 |Eten van Nu|15056|
 |Kinderen van Nu|22120|
 
+Performance:
+![Query 3 performance and execution plan](query3_perf.png)
