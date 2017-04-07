@@ -17,7 +17,7 @@ Requirement:
   ticket bij een event.
 
 Query:
-```mssql
+```
 SELECT
   AVG(DATEDIFF(DD, Evenementen.begin_dt, Orders.datum)) AS avg_dagen
 FROM Evenementen
@@ -30,6 +30,7 @@ ON Aankoop.order_nr = Orders.order_nr;
 ```
 
 Data:
+
 |avg_dagen|
 |:---|
 |382|
@@ -41,7 +42,7 @@ Requirement:
   laatste 5 jaar. Top 10.
 
 Query:
-```mssql
+```
 SELECT
   TOP(10) pc AS postcode,
   COUNT(pc) AS aantal
@@ -55,6 +56,7 @@ ORDER BY
 ```
 
 Data:
+
 |postcode|aantal|
 |:---|:---|
 |7811CL|37|
@@ -76,7 +78,7 @@ Requirement:
     * De titels in het eindresultaat moeten uniek zijn.
 
 Query:
-```mssql
+```
 SELECT
   TOP(3)
   titel,
@@ -115,6 +117,7 @@ WHERE row_number = 1;
 ```
 
 Data:
+
 |titel|opzeg_aantal|
 |:---|:---|
 |Auto van Nu|7462|
